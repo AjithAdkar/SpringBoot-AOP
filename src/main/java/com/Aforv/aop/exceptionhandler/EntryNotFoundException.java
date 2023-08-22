@@ -1,4 +1,4 @@
-package com.Aforv.aop.customexception;
+package com.Aforv.aop.exceptionhandler;
 
 public class EntryNotFoundException extends Exception{
     /**
