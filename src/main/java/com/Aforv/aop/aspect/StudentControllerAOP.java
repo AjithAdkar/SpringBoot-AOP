@@ -1,55 +1,82 @@
 package com.Aforv.aop.aspect;
 
-import java.util.List;
-
+import com.Aforv.aop.exceptionhandler.InvalidUserException;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
-import com.Aforv.aop.model.Student;
-
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalTime;
 
 @Aspect
 @Component
 @Slf4j
 public class StudentControllerAOP {
-	@Pointcut("execution( * com.Aforv.aop.controller.*.*(..))")
-	public void forControllerAllMethod() {
-	}
+//	@Pointcut("execution(<modifiers> <return_type> <full_class_name>.<method_name>(<parameter_types>))")
+//	public void specificMethod() {}
 
-	@Around(value = "forControllerAllMethod()")
-	public Object beforeLog(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-		log.info(proceedingJoinPoint.getSignature().getName() + " Started");
-		Object o = proceedingJoinPoint.proceed();
-		log.info(proceedingJoinPoint.getSignature().getName() + " ended");
-		return o;
-	}
+    @Pointcut("execution(public  * com.Aforv.aop.controller.StudentController.findAllStudent())")
+    public void findAllStudent() {
+    }
 
-	@Before(value = "forControllerAllMethod()")
-	public void beforeAdvice(JoinPoint joinPoint) {
-		log.info("Before Aspect");
-	}
+    @Pointcut("execution(public  * com.Aforv.aop.controller.StudentController.updateStudent(..))")
+    public void updateStudent() {
+    }
 
-	@After(value = "forControllerAllMethod()")
-	public void afterAdvice(JoinPoint joinPoint) {
-		log.info("After Aspect");
-	}
+    @Pointcut("execution( * com.Aforv.aop.controller.*.*(..))")
+    public void forControllerAllMethod() {
+    }
 
-	@AfterReturning(value = "forControllerAllMethod()")
-	public void AfterReturningAdvice(JoinPoint joinPoint) {
-		log.info("AfterReturning Aspect");
-	}
+    @Around("@annotation(com.Aforv.aop.customannotation.PerformanceMonitor)")
+    public Object beforeLog(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
 
-	@AfterThrowing(value = "forControllerAllMethod()")
-	public void AfterThrowingAdvice(JoinPoint joinPoint) {
-		log.info("AfterThrowing Aspect");
-	}
+        Object result = proceedingJoinPoint.proceed();
+
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+
+        log.info( proceedingJoinPoint.getSignature() + " executed in " + executionTime + "ms");
+
+        return result;
+    }
+
+//
+//	@Before(value = "forControllerAllMethod()")
+//	public void beforeAdvice(JoinPoint joinPoint) {
+//		System.out.println(joinPoint.getSignature());
+//		log.info("Before Aspect");
+//	}
+//
+//	@After(value = "forControllerAllMethod()")
+//	public void afterAdvice(JoinPoint joinPoint) {
+//		log.info("After Aspect");
+//	}
+//
+//	@AfterReturning(value = "findAllStudent()")
+//	public void AfterReturningAdvice(JoinPoint joinPoint) {
+//		log.info("AfterReturning Aspect");
+//	}
+
+//	@AfterThrowing(value = "findStudentById()")
+//	public void AfterThrowingAdvice(JoinPoint joinPoint) {
+//		log.info("AfterThrowing Aspect");
+//	}
+
+
+    @Before(value = "updateStudent()")
+    public void beforeAdviceAddSecurity(JoinPoint joinPoint) {
+        //fetching the first parameter of method
+        var role = joinPoint.getArgs()[0];
+
+        if (!role.toString().equals("admin")) {
+            log.warn(role + " try to update the user id " + joinPoint.getArgs()[0] + " detail on " + LocalTime.now());
+            throw new InvalidUserException(role + " unable to edit the student detail contact Admin to update");
+        }
+        log.info(role + " updated the user id " + joinPoint.getArgs()[1] + " on  " + LocalTime.now());
+    }
 }
