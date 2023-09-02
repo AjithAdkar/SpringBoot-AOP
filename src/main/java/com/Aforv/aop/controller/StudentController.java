@@ -1,11 +1,11 @@
 package com.Aforv.aop.controller;
 
 import com.Aforv.aop.customannotation.PerformanceMonitor;
-import com.Aforv.aop.dto.StudentDTO;
 import com.Aforv.aop.exceptionhandler.EntryNotFoundException;
 import com.Aforv.aop.model.Student;
 import com.Aforv.aop.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +17,16 @@ import java.util.List;
 public class StudentController {
     private final StudentService studentService;
 
-
     @PerformanceMonitor
+
     @GetMapping("/all")
-    public List<StudentDTO> findAllStudent() throws InterruptedException {
+    public List<Student> findAllStudent() throws InterruptedException {
+
         return studentService.getAllStudent();
     }
 
     @GetMapping("/{id}")
-    public StudentDTO StudentDTO(@PathVariable int id) throws EntryNotFoundException {
+    public Student findStudentById(@PathVariable int id) throws EntryNotFoundException {
         return studentService.findStudentById(id);
     }
 
@@ -50,7 +51,7 @@ public class StudentController {
     }
 
     @PutMapping("/{role}/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable String role, @PathVariable int id, @RequestBody Student student) throws EntryNotFoundException {
+    public ResponseEntity<Student> updateStudent(@PathVariable String role,@PathVariable int id, @RequestBody Student student) throws EntryNotFoundException {
         return ResponseEntity.accepted().body(studentService.updateStudent(id, student));
     }
 

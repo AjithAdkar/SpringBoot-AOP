@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.net.http.WebSocket;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
