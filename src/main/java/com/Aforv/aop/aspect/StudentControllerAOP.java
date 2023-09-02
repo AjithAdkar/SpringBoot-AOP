@@ -4,7 +4,10 @@ import com.Aforv.aop.exceptionhandler.InvalidUserException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -59,10 +62,10 @@ public class StudentControllerAOP {
 //		log.info("AfterReturning Aspect");
 //	}
 
-	@AfterThrowing(value = "forControllerAllMethod()")
-	public void AfterThrowingAdvice(JoinPoint joinPoint) {
-		log.info("AfterThrowing Aspect");
-	}
+//	@AfterThrowing(value = "findStudentById()")
+//	public void AfterThrowingAdvice(JoinPoint joinPoint) {
+//		log.info("AfterThrowing Aspect");
+//	}
 
 
     @Before(value = "updateStudent()")
