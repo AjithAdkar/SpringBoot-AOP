@@ -2,11 +2,11 @@ package com.Aforv.aop.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import com.Aforv.aop.dto.StudentDTO;
-import com.Aforv.aop.dto.StudentDTOMapper;
 import com.Aforv.aop.exceptionhandler.EntryNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.Aforv.aop.model.Student;
@@ -18,15 +18,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
-    private final StudentDTOMapper studentDTOMapper;
-    public List<StudentDTO> getAllStudent() throws InterruptedException {
+    public List<Student> getAllStudent() throws InterruptedException {
         Thread.sleep(100);
-        return studentRepository.findAll().stream().map(studentDTOMapper).collect(Collectors.toList());
+        return studentRepository.findAll();
     }
 
 //    @Cacheable(value = "productsCache", key = "'allProducts'")
-    public StudentDTO findStudentById(int id) throws EntryNotFoundException {
-     return  studentDTOMapper.apply(studentRepository.findById(id).orElseThrow(() -> new EntryNotFoundException("no entry found for id: " + id)));
+    public Student findStudentById(int id) throws EntryNotFoundException {
+        return studentRepository.findById(id).orElseThrow(() -> new EntryNotFoundException("no entry found for id: " + id));
     }
 
     public List<Student> findStudentByName(String name) throws EntryNotFoundException {
